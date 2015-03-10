@@ -12,10 +12,11 @@ This is still a work in progress, at the moment I've only finished the MMU and p
 
 ## Points to keep in mind
 
-* I dont want to use SDL for gfx and audio, so I am researching the available options to access the HW within a terminal window (contrast to having SDL summon a new window to render the GFX)
+* ~~I dont want to use SDL for gfx and audio, so I am researching the available options to access the HW within a terminal window (contrast to having SDL summon a new window to render the GFX)~~ Welp turns out SDL 1.2 supports frame buffer rendering so I'll give it a go, on osx and windows though there isn't any way to write directly to the GFX card, so bummer.
 * I'm working on Mac OS however, I doubt there is any barrier for this to work on any *NIX system. Not sure about windows though so you can keep me updated if you try it on Windows.
 * Once I'm done with the core of the emulator, I'll update the README to include installation and usage.
 * I'm trying to keep the code documented as much as possible for my self and others since this is purely for learning and practicing purposes.
+* I'm going to have this run on a Raspberry PI with a windowless linux distro as my portable retro game station
 
 # Wacky ideas
 
