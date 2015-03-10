@@ -15,7 +15,7 @@ const ZRAMSIZE = 0x80
 type MemErrAddrOutOfBounds Address
 
 func (e MemErrAddrOutOfBounds) Error() string {
-	return fmt.Sprintf("MMU: Address %v is out of bounds", Address(e))
+	return fmt.Sprintf("MMU: Address %#010x is out of bounds", Address(e))
 }
 
 type MemErrLoadRomFailed string
@@ -139,7 +139,7 @@ func (m *MMU) ReadByte(addr Address) (byte, error) {
 }
 
 // Read 16-bit word from addr
-func (m *MMU) ReadWord(addr Address) (Word, error) {
+func (m *MMU) ReadWord(addr Address) (Address, error) {
 	byte1, error1 := m.ReadByte(addr)
 	if error1 == nil {
 		return 0, error1
@@ -150,7 +150,7 @@ func (m *MMU) ReadWord(addr Address) (Word, error) {
 		return 0, error2
 	}
 
-	return Word(byte1 + (byte2 << 8)), nil
+	return CombineToAddress(byte1, byte2), nil
 }
 
 // Write 8-bit byte to addr
@@ -196,8 +196,8 @@ func (m *MMU) WriteByte(addr Address, value byte) error {
 }
 
 // Write 16-bit word to addr
-func (m *MMU) WriteWord(addr Address, value Word) error {
-	error1 := m.WriteByte(addr, byte(value&255))
+func (m *MMU) WriteWord(addr, value Address) error {
+	error1 := m.WriteByte(addr, byte(value))
 	if error1 != nil {
 		return error1
 	}
