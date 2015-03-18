@@ -1256,21 +1256,64 @@ func (z *Z80) InitInstructions() {
 		LogErrors(err)
 	}
 
-	z._instructions[0x78]
+	z._instructions[0x78] = func() { // LD A,B
+		z._r.A = z._r.B
 
-	z._instructions[0x79]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x7A]
+	z._instructions[0x79] = func() { // LD A,C
+		z._r.A = z._r.C
 
-	z._instructions[0x7B]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x7C]
+	z._instructions[0x7A] = func() { // LD A,D
+		z._r.A = z._r.D
 
-	z._instructions[0x7D]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x7E]
+	z._instructions[0x7B] = func() { // LD A,E
+		z._r.A = z._r.E
 
-	z._instructions[0x7F]
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x7C] = func() { // LD A,H
+		z._r.A = z._r.H
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x7D] = func() { // LD A,L
+		z._r.A = z._r.L
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x7E] = func() { // LD A,(HL)
+		var err error
+		z._r.A, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x7F] = func() { // LD A,A
+		z._r.A = z._r.A
+
+		z._r.M = 1
+		z._r.T = 4
+	}
 
 	// 0x80
 	z._instructions[0x80]
