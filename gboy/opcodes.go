@@ -1246,37 +1246,81 @@ func (z *Z80) InitInstructions() {
 	}
 
 	// 0x90
-	z._instructions[0x90]
+	z._instructions[0x90] = func() { // SUB A,B
+		z._instructions.Subr_r(&z._r.B)
+	}
 
-	z._instructions[0x91]
+	z._instructions[0x91] = func() { // SUB A,C
+		z._instructions.Subr_r(&z._r.C)
+	}
 
-	z._instructions[0x92]
+	z._instructions[0x92] = func() { // SUB A,D
+		z._instructions.Subr_r(&z._r.D)
+	}
 
-	z._instructions[0x93]
+	z._instructions[0x93] = func() { // SUB A,E
+		z._instructions.Subr_r(&z._r.E)
+	}
 
-	z._instructions[0x94]
+	z._instructions[0x94] = func() { // SUB A,H
+		z._instructions.Subr_r(&z._r.H)
+	}
 
-	z._instructions[0x95]
+	z._instructions[0x95] = func() { // SUB A,L
+		z._instructions.Subr_r(&z._r.L)
+	}
 
-	z._instructions[0x96]
+	z._instructions[0x96] = func() { // SUB A,(HL)
+		hl, err := mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		z._instructions.Subr_r(&hl)
 
-	z._instructions[0x97]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0x98]
+		LogErrors(err)
+	}
 
-	z._instructions[0x99]
+	z._instructions[0x97] = func() { // SUB A,A
+		z._instructions.Subr_r(&z._r.A)
+	}
 
-	z._instructions[0x9A]
+	z._instructions[0x98] = func() { // SBC A,B
+		z._instructions.Subc_r(&z._r.B)
+	}
 
-	z._instructions[0x9B]
+	z._instructions[0x99] = func() { // SBC A,C
+		z._instructions.Subc_r(&z._r.C)
+	}
 
-	z._instructions[0x9C]
+	z._instructions[0x9A] = func() { // SBC A,D
+		z._instructions.Subc_r(&z._r.D)
+	}
 
-	z._instructions[0x9D]
+	z._instructions[0x9B] = func() { // SBC A,E
+		z._instructions.Subc_r(&z._r.E)
+	}
 
-	z._instructions[0x9E]
+	z._instructions[0x9C] = func() { // SBC A,H
+		z._instructions.Subc_r(&z._r.H)
+	}
 
-	z._instructions[0x9F]
+	z._instructions[0x9D] = func() { // SBC A,L
+		z._instructions.Subc_r(&z._r.L)
+	}
+
+	z._instructions[0x9E] = func() { // SBC A,(HL)
+		hl, err := mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		z._instructions.Subc_r(&hl)
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x9F] = func() { // SBC A,A
+		z._instructions.Subc_r(&z._r.A)
+	}
 
 	// 0xA0
 	z._instructions[0xA0]
@@ -1530,6 +1574,39 @@ func (ins *Instructions) Addc_r(src *byte) {
 
 	z._r.M = 1
 	z._r.T = 4
+}
+
+// SUBr
+func (ins *Instructions) Subr_r(src *byte) {
+	sub := int16(z80._r.A) - int16(*src)
+
+	z80._r.A = byte(sub)
+	ins.ZeroF(z80._r.A, 1)
+
+	if sub < 0 {
+		z80._r.F |= 0x10
+	}
+
+	z80._r.M = 1
+	z80._r.T = 4
+}
+
+// SUBc
+func (ins *Instructions) Subc_r(src *byte) {
+	sub := int16(z80._r.A) - int16(*src)
+	if (z80._r.F & 0x10) != 0 {
+		sub -= 1
+	}
+
+	z80._r.A = byte(sub)
+	ins.ZeroF(z80._r.A, 1)
+
+	if sub < 0 {
+		z80._r.F |= 0x10
+	}
+
+	z80._r.M = 1
+	z80._r.T = 4
 }
 
 // Unimplemented instruction error!
