@@ -823,45 +823,27 @@ func (z *Z80) InitInstructions() {
 
 	// 0x40
 	z._instructions[0x40] = func() { // LD B,B
-		z._r.B = z._r.B
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.B, &z._r.B)
 	}
 
 	z._instructions[0x41] = func() { // LD B,C
-		z._r.B = z._r.C
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.B, &z._r.C)
 	}
 
 	z._instructions[0x42] = func() { // LD B,D
-		z._r.B = z._r.D
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.B, &z._r.D)
 	}
 
 	z._instructions[0x43] = func() { // LD B,E
-		z._r.B = z._r.E
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.B, &z._r.E)
 	}
 
 	z._instructions[0x44] = func() { // LD B,H
-		z._r.B = z._r.H
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.B, &z._r.H)
 	}
 
 	z._instructions[0x45] = func() { // LD B,L
-		z._r.B = z._r.L
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.B, &z._r.L)
 	}
 
 	z._instructions[0x46] = func() { // LD B,(HL)
@@ -875,52 +857,31 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0x47] = func() { // LD B, A
-		z._r.B = z._r.A
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.B, &z._r.A)
 	}
 
 	z._instructions[0x48] = func() { // LD C,B
-		z._r.C = z._r.B
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.C, &z._r.B)
 	}
 
 	z._instructions[0x49] = func() { // LD C,C
-		z._r.C = z._r.C
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.C, &z._r.C)
 	}
 
 	z._instructions[0x4A] = func() { // LD C,D
-		z._r.C = z._r.D
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.C, &z._r.D)
 	}
 
 	z._instructions[0x4B] = func() { // LD C,E
-		z._r.C = z._r.E
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.C, &z._r.E)
 	}
 
 	z._instructions[0x4C] = func() { // LD C,H
-		z._r.C = z._r.H
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.C, &z._r.H)
 	}
 
 	z._instructions[0x4D] = func() { // LD C,L
-		z._r.C = z._r.L
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.C, &z._r.L)
 	}
 
 	z._instructions[0x4E] = func() { // LD C,(HL)
@@ -934,53 +895,32 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0x4F] = func() { // LD C,A
-		z._r.C = z._r.A
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.C, &z._r.A)
 	}
 
 	// 0x50
 	z._instructions[0x50] = func() { // LD D,B
-		z._r.D = z._r.B
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.D, &z._r.B)
 	}
 
 	z._instructions[0x51] = func() { // LD D,C
-		z._r.D = z._r.C
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.D, &z._r.C)
 	}
 
 	z._instructions[0x52] = func() { // LD D,D
-		z._r.D = z._r.D
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.D, &z._r.D)
 	}
 
 	z._instructions[0x53] = func() { // LD D,E
-		z._r.D = z._r.E
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.D, &z._r.E)
 	}
 
 	z._instructions[0x54] = func() { // LD D,H
-		z._r.D = z._r.H
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.D, &z._r.H)
 	}
 
 	z._instructions[0x55] = func() { // LD D,L
-		z._r.D = z._r.L
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.D, &z._r.L)
 	}
 
 	z._instructions[0x56] = func() { // LD D,(HL)
@@ -994,52 +934,31 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0x57] = func() { // LD D,A
-		z._r.D = z._r.A
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.D, &z._r.A)
 	}
 
 	z._instructions[0x58] = func() { // LD E,B
-		z._r.E = z._r.B
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.E, &z._r.B)
 	}
 
 	z._instructions[0x59] = func() { // LD E,C
-		z._r.E = z._r.C
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.E, &z._r.C)
 	}
 
 	z._instructions[0x5A] = func() { // LD E,D
-		z._r.E = z._r.D
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.E, &z._r.D)
 	}
 
 	z._instructions[0x5B] = func() { // LD E,E
-		z._r.E = z._r.E
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.E, &z._r.E)
 	}
 
 	z._instructions[0x5C] = func() { // LD E,H
-		z._r.E = z._r.H
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.E, &z._r.H)
 	}
 
 	z._instructions[0x5D] = func() { // LD E,L
-		z._r.E = z._r.L
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.E, &z._r.L)
 	}
 
 	z._instructions[0x5E] = func() { // LD E,(HL)
@@ -1053,53 +972,32 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0x5F] = func() { // LD E,A
-		z._r.E = z._r.A
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.E, &z._r.A)
 	}
 
 	// 0x60
 	z._instructions[0x60] = func() { // LD H,B
-		z._r.H = z._r.B
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.H, &z._r.B)
 	}
 
 	z._instructions[0x61] = func() { // LD H,C
-		z._r.H = z._r.C
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.H, &z._r.C)
 	}
 
 	z._instructions[0x62] = func() { // LD H,D
-		z._r.H = z._r.D
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.H, &z._r.D)
 	}
 
 	z._instructions[0x63] = func() { // LD H,E
-		z._r.H = z._r.E
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.H, &z._r.E)
 	}
 
 	z._instructions[0x64] = func() { // LD H,H
-		z._r.H = z._r.H
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.H, &z._r.H)
 	}
 
 	z._instructions[0x65] = func() { // LD H,L
-		z._r.H = z._r.L
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.H, &z._r.L)
 	}
 
 	z._instructions[0x66] = func() { // LD H,(HL)
@@ -1113,52 +1011,31 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0x67] = func() { // LD H,A
-		z._r.H = z._r.A
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.H, &z._r.A)
 	}
 
 	z._instructions[0x68] = func() { // LD L,B
-		z._r.L = z._r.B
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.L, &z._r.B)
 	}
 
 	z._instructions[0x69] = func() { // LD L,C
-		z._r.L = z._r.C
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.L, &z._r.C)
 	}
 
 	z._instructions[0x6A] = func() { // LD L,D
-		z._r.L = z._r.D
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.L, &z._r.D)
 	}
 
 	z._instructions[0x6B] = func() { // LD L,E
-		z._r.L = z._r.E
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.L, &z._r.E)
 	}
 
 	z._instructions[0x6C] = func() { // LD L,H
-		z._r.L = z._r.H
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.L, &z._r.H)
 	}
 
 	z._instructions[0x6D] = func() { // LD L,L
-		z._r.L = z._r.L
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.L, &z._r.L)
 	}
 
 	z._instructions[0x6E] = func() { // LD L,(HL)
@@ -1172,10 +1049,7 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0x6F] = func() { // LD L,A
-		z._r.L = z._r.A
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.L, &z._r.A)
 	}
 
 	// 0x70
@@ -1257,45 +1131,27 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0x78] = func() { // LD A,B
-		z._r.A = z._r.B
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.A, &z._r.B)
 	}
 
 	z._instructions[0x79] = func() { // LD A,C
-		z._r.A = z._r.C
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.A, &z._r.C)
 	}
 
 	z._instructions[0x7A] = func() { // LD A,D
-		z._r.A = z._r.D
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.A, &z._r.D)
 	}
 
 	z._instructions[0x7B] = func() { // LD A,E
-		z._r.A = z._r.E
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.A, &z._r.E)
 	}
 
 	z._instructions[0x7C] = func() { // LD A,H
-		z._r.A = z._r.H
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.A, &z._r.H)
 	}
 
 	z._instructions[0x7D] = func() { // LD A,L
-		z._r.A = z._r.L
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.A, &z._r.L)
 	}
 
 	z._instructions[0x7E] = func() { // LD A,(HL)
@@ -1309,28 +1165,47 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0x7F] = func() { // LD A,A
-		z._r.A = z._r.A
-
-		z._r.M = 1
-		z._r.T = 4
+		z._instructions.LoadRnR(&z._r.A, &z._r.A)
 	}
 
 	// 0x80
-	z._instructions[0x80]
+	z._instructions[0x80] = func() { // ADD A,B
+		z._instructions.Addr_r(&z._r.B)
+	}
 
-	z._instructions[0x81]
+	z._instructions[0x81] = func() { // ADD A,C
+		z._instructions.Addr_r(&z._r.C)
+	}
 
-	z._instructions[0x82]
+	z._instructions[0x82] = func() { // ADD A,D
+		z._instructions.Addr_r(&z._r.D)
+	}
 
-	z._instructions[0x83]
+	z._instructions[0x83] = func() { // ADD A,E
+		z._instructions.Addr_r(&z._r.E)
+	}
 
-	z._instructions[0x84]
+	z._instructions[0x84] = func() { // ADD A,H
+		z._instructions.Addr_r(&z._r.H)
+	}
 
-	z._instructions[0x85]
+	z._instructions[0x85] = func() { // ADD A,L
+		z._instructions.Addr_r(&z._r.L)
+	}
 
-	z._instructions[0x86]
+	z._instructions[0x86] = func() { // ADD A,(HL)
+		hl, err := mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		z._instructions.Addr_r(&hl)
 
-	z._instructions[0x87]
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x87] = func() { // ADD A,A
+		z._instructions.Addr_r(&z._r.A)
+	}
 
 	z._instructions[0x88]
 
@@ -1584,7 +1459,7 @@ func (z *Z80) InitInstructions() {
 func (ins *Instructions) ZeroF(i, as byte) {
 	z80._r.F = 0
 	if i == 0 {
-		z80._r.F |= 128
+		z80._r.F |= 0x80
 	}
 
 	if as != 0 {
@@ -1592,6 +1467,29 @@ func (ins *Instructions) ZeroF(i, as byte) {
 	} else {
 		z80._r.F |= 0
 	}
+}
+
+// Loads a register at src in register at dst
+func (ins *Instructions) LoadRnR(dst, src *byte) {
+	*dst = *src
+
+	z80._r.M = 1
+	z80._r.T = 4
+}
+
+// ADDr
+func (ins *Instructions) Addr_r(src *byte) {
+	sum := Address(z80._r.A) + Address(*src)
+
+	z80._r.A = byte(sum)
+	ins.ZeroF(z80._r.A, 0)
+
+	if sum > 0xF {
+		z80._r.F |= 0x10
+	}
+
+	z80._r.M = 1
+	z80._r.T = 4
 }
 
 // Unimplemented instruction error!
