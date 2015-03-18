@@ -1323,70 +1323,158 @@ func (z *Z80) InitInstructions() {
 	}
 
 	// 0xA0
-	z._instructions[0xA0]
+	z._instructions[0xA0] = func() { // AND B
+		z._instructions.Andr_r(&z._r.B)
+	}
 
-	z._instructions[0xA1]
+	z._instructions[0xA1] = func() { // AND C
+		z._instructions.Andr_r(&z._r.C)
+	}
 
-	z._instructions[0xA2]
+	z._instructions[0xA2] = func() { // AND D
+		z._instructions.Andr_r(&z._r.D)
+	}
 
-	z._instructions[0xA3]
+	z._instructions[0xA3] = func() { // AND E
+		z._instructions.Andr_r(&z._r.E)
+	}
 
-	z._instructions[0xA4]
+	z._instructions[0xA4] = func() { // AND H
+		z._instructions.Andr_r(&z._r.H)
+	}
 
-	z._instructions[0xA5]
+	z._instructions[0xA5] = func() { // AND L
+		z._instructions.Andr_r(&z._r.L)
+	}
 
-	z._instructions[0xA6]
+	z._instructions[0xA6] = func() { // AND (HL)
+		hl, err := mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		z._instructions.Andr_r(&hl)
 
-	z._instructions[0xA7]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0xA8]
+		LogErrors(err)
+	}
 
-	z._instructions[0xA9]
+	z._instructions[0xA7] = func() { // AND A
+		z._instructions.Andr_r(&z._r.A)
+	}
 
-	z._instructions[0xAA]
+	z._instructions[0xA8] = func() { // XOR B
+		z._instructions.Xorr_r(&z._r.B)
+	}
 
-	z._instructions[0xAB]
+	z._instructions[0xA9] = func() { // XOR C
+		z._instructions.Xorr_r(&z._r.C)
+	}
 
-	z._instructions[0xAC]
+	z._instructions[0xAA] = func() { // XOR D
+		z._instructions.Xorr_r(&z._r.D)
+	}
 
-	z._instructions[0xAD]
+	z._instructions[0xAB] = func() { // XOR E
+		z._instructions.Xorr_r(&z._r.E)
+	}
 
-	z._instructions[0xAE]
+	z._instructions[0xAC] = func() { // XOR H
+		z._instructions.Xorr_r(&z._r.H)
+	}
 
-	z._instructions[0xAF]
+	z._instructions[0xAD] = func() { // XOR L
+		z._instructions.Xorr_r(&z._r.L)
+	}
+
+	z._instructions[0xAE] = func() { // XOR (HL)
+		hl, err := mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		z._instructions.Xorr_r(&hl)
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xAF] = func() { // XOR A
+		z._instructions.Xorr_r(&z._r.A)
+	}
 
 	// 0xB0
-	z._instructions[0xB0]
+	z._instructions[0xB0] = func() { // OR B
+		z._instructions.Orr_r(&z._r.B)
+	}
 
-	z._instructions[0xB1]
+	z._instructions[0xB1] = func() { // OR C
+		z._instructions.Orr_r(&z._r.C)
+	}
 
-	z._instructions[0xB2]
+	z._instructions[0xB2] = func() { // OR D
+		z._instructions.Orr_r(&z._r.D)
+	}
 
-	z._instructions[0xB3]
+	z._instructions[0xB3] = func() { // OR E
+		z._instructions.Orr_r(&z._r.E)
+	}
 
-	z._instructions[0xB4]
+	z._instructions[0xB4] = func() { // OR H
+		z._instructions.Orr_r(&z._r.H)
+	}
 
-	z._instructions[0xB5]
+	z._instructions[0xB5] = func() { // OR L
+		z._instructions.Orr_r(&z._r.L)
+	}
 
-	z._instructions[0xB6]
+	z._instructions[0xB6] = func() { // OR (HL)
+		hl, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		z._instructions.Orr_r(&hl)
 
-	z._instructions[0xB7]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0xB8]
+		LogErrors(err)
+	}
 
-	z._instructions[0xB9]
+	z._instructions[0xB7] = func() { // OR A
+		z._instructions.Orr_r(&z._r.A)
+	}
 
-	z._instructions[0xBA]
+	z._instructions[0xB8] = func() { // CP B
+		z._instructions.Cpr_r(&z._r.B)
+	}
 
-	z._instructions[0xBB]
+	z._instructions[0xB9] = func() { // CP C
+		z._instructions.Cpr_r(&z._r.C)
+	}
 
-	z._instructions[0xBC]
+	z._instructions[0xBA] = func() { // CP D
+		z._instructions.Cpr_r(&z._r.D)
+	}
 
-	z._instructions[0xBD]
+	z._instructions[0xBB] = func() { // CP E
+		z._instructions.Cpr_r(&z._r.E)
+	}
 
-	z._instructions[0xBE]
+	z._instructions[0xBC] = func() { // CP H
+		z._instructions.Cpr_r(&z._r.H)
+	}
 
-	z._instructions[0xBF]
+	z._instructions[0xBD] = func() { // CP L
+		z._instructions.Cpr_r(&z._r.L)
+	}
+
+	z._instructions[0xBE] = func() { // CP (HL)
+		hl, err := mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		z._instructions.Cpr_r(&hl)
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xBF] = func() { // CP A
+		z._instructions.Cpr_r(&z._r.A)
+	}
 
 	// 0xC0
 	z._instructions[0xC0]
@@ -1522,6 +1610,7 @@ func (z *Z80) InitInstructions() {
 }
 
 // Helper methods
+// Check if a carry needs to be set and set it
 func (ins *Instructions) ZeroF(i, as byte) {
 	z80._r.F = 0
 	if i == 0 {
@@ -1543,7 +1632,7 @@ func (ins *Instructions) LoadRnR(dst, src *byte) {
 	z80._r.T = 4
 }
 
-// ADDr
+// Adds register at src to register A
 func (ins *Instructions) Addr_r(src *byte) {
 	sum := Address(z80._r.A) + Address(*src)
 
@@ -1558,7 +1647,7 @@ func (ins *Instructions) Addr_r(src *byte) {
 	z80._r.T = 4
 }
 
-// ADDc
+// Adds register at src to register A with carry
 func (ins *Instructions) Addc_r(src *byte) {
 	sum := Address(z80._r.A) + Address(*src)
 	if (z80._r.F & 0x10) != 0 {
@@ -1576,7 +1665,7 @@ func (ins *Instructions) Addc_r(src *byte) {
 	z._r.T = 4
 }
 
-// SUBr
+// Subtracts register at src from register A
 func (ins *Instructions) Subr_r(src *byte) {
 	sub := int16(z80._r.A) - int16(*src)
 
@@ -1591,7 +1680,7 @@ func (ins *Instructions) Subr_r(src *byte) {
 	z80._r.T = 4
 }
 
-// SUBc
+// Subtracts register at src from register A with carry
 func (ins *Instructions) Subc_r(src *byte) {
 	sub := int16(z80._r.A) - int16(*src)
 	if (z80._r.F & 0x10) != 0 {
@@ -1602,6 +1691,48 @@ func (ins *Instructions) Subc_r(src *byte) {
 	ins.ZeroF(z80._r.A, 1)
 
 	if sub < 0 {
+		z80._r.F |= 0x10
+	}
+
+	z80._r.M = 1
+	z80._r.T = 4
+}
+
+// Logical Operations
+// AND
+func (ins *Instructions) Andr_r(src *byte) {
+	z80._r.A &= *src
+	ins.ZeroF(z80._r.A, 0)
+
+	z80._r.M = 1
+	z80._r.T = 4
+}
+
+// XOR
+func (inc *Instructions) Xorr_r(src *byte) {
+	z80._r.A ^= *src
+	ins.ZeroF(z80._r.A, 0)
+
+	z80._r.M = 1
+	z80._r.T = 4
+}
+
+// OR
+func (inc *Instructions) Orr_r(src *byte) {
+	z80._r.A |= *src
+	ins.ZeroF(z80._r.A, 0)
+
+	z80._r.M = 1
+	z80._r.T = 4
+}
+
+// Compare register at src to register A
+func (ins *Instructions) Cpr_r(src *byte) {
+	i := int16(z80._r.A)
+	i -= int16(*src)
+
+	ins.ZeroF(i, 1)
+	if i < 0 {
 		z80._r.F |= 0x10
 	}
 
