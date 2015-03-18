@@ -1179,21 +1179,82 @@ func (z *Z80) InitInstructions() {
 	}
 
 	// 0x70
-	z._instructions[0x70]
+	z._instructions[0x70] = func() { // LD (HL),B
+		addr := CombineToAddress(z._r.H, z._r.L)
+		err := mmu.WriteByte(addr, z._r.B)
 
-	z._instructions[0x71]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0x72]
+		LogErrors(err)
+	}
 
-	z._instructions[0x73]
+	z._instructions[0x71] = func() { // LD (HL),C
+		addr := CombineToAddress(z._r.H, z._r.L)
+		err := mmu.WriteByte(addr, z._r.C)
 
-	z._instructions[0x74]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0x75]
+		LogErrors(err)
+	}
 
-	z._instructions[0x76]
+	z._instructions[0x72] = func() { // LD (HL),D
+		addr := CombineToAddress(z._r.H, z._r.L)
+		err := mmu.WriteByte(addr, z._r.D)
 
-	z._instructions[0x77]
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x73] = func() { // LD (HL),E
+		addr := CombineToAddress(z._r.H, z._r.L)
+		err := mmu.WriteByte(addr, z._r.E)
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x74] = func() { // LD (HL),H
+		addr := CombineToAddress(z._r.H, z._r.L)
+		err := mmu.WriteByte(addr, z._r.H)
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x75] = func() { // LD (HL), L
+		addr := CombineToAddress(z._r.H, z._r.L)
+		err := mmu.WriteByte(addr, z._r.L)
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x76] = func() { // HALT
+		z._halt = true
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x77] = func() { // LD (HL),A
+		addr := CombineToAddress(z._r.H, z._r.L)
+		err := mmu.WriteByte(addr, z._r.A)
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
 
 	z._instructions[0x78]
 

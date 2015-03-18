@@ -13,6 +13,7 @@ type Z80 struct {
 	_clock        Clock
 	_r            Registers
 	_instructions Instructions
+	_halt         bool
 }
 
 // Clock
