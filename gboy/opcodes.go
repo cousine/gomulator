@@ -1060,37 +1060,123 @@ func (z *Z80) InitInstructions() {
 	}
 
 	// 0x60
-	z._instructions[0x60]
+	z._instructions[0x60] = func() { // LD H,B
+		z._r.H = z._r.B
 
-	z._instructions[0x61]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x62]
+	z._instructions[0x61] = func() { // LD H,C
+		z._r.H = z._r.C
 
-	z._instructions[0x63]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x64]
+	z._instructions[0x62] = func() { // LD H,D
+		z._r.H = z._r.D
 
-	z._instructions[0x65]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x66]
+	z._instructions[0x63] = func() { // LD H,E
+		z._r.H = z._r.E
 
-	z._instructions[0x67]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x68]
+	z._instructions[0x64] = func() { // LD H,H
+		z._r.H = z._r.H
 
-	z._instructions[0x69]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x6A]
+	z._instructions[0x65] = func() { // LD H,L
+		z._r.H = z._r.L
 
-	z._instructions[0x6B]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x6C]
+	z._instructions[0x66] = func() { // LD H,(HL)
+		var err error
+		z._r.H, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
 
-	z._instructions[0x6D]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0x6E]
+		LogErrors(err)
+	}
 
-	z._instructions[0x6F]
+	z._instructions[0x67] = func() { // LD H,A
+		z._r.H = z._r.A
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x68] = func() { // LD L,B
+		z._r.L = z._r.B
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x69] = func() { // LD L,C
+		z._r.L = z._r.C
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x6A] = func() { // LD L,D
+		z._r.L = z._r.D
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x6B] = func() { // LD L,E
+		z._r.L = z._r.E
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x6C] = func() { // LD L,H
+		z._r.L = z._r.H
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x6D] = func() { // LD L,L
+		z._r.L = z._r.L
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x6E] = func() { // LD L,(HL)
+		var err error
+		z._r.L, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x6F] = func() { // LD L,A
+		z._r.L = z._r.A
+
+		z._r.M = 1
+		z._r.T = 4
+	}
 
 	// 0x70
 	z._instructions[0x70]
