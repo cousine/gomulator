@@ -1207,21 +1207,43 @@ func (z *Z80) InitInstructions() {
 		z._instructions.Addr_r(&z._r.A)
 	}
 
-	z._instructions[0x88]
+	z._instructions[0x88] = func() { // ADC A,B
+		z._instructions.Addc_r(&z._r.B)
+	}
 
-	z._instructions[0x89]
+	z._instructions[0x89] = func() { // ADC A,C
+		z._instructions.Addc_r(&z._r.C)
+	}
 
-	z._instructions[0x8A]
+	z._instructions[0x8A] = func() { // ADC A,D
+		z._instructions.Addc_r(&z._r.D)
+	}
 
-	z._instructions[0x8B]
+	z._instructions[0x8B] = func() { // ADC A,E
+		z._instructions.Addc_r(&z._r.E)
+	}
 
-	z._instructions[0x8C]
+	z._instructions[0x8C] = func() { // ADC A,H
+		z._instructions.Addc_r(&z._r.H)
+	}
 
-	z._instructions[0x8D]
+	z._instructions[0x8D] = func() { // ADC A,L
+		z._instructions.Addc_r(&z._r.L)
+	}
 
-	z._instructions[0x8E]
+	z._instructions[0x8E] = func() { // ADC A,(HL)
+		hl, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		z._instructions.Addc_r(&hl)
 
-	z._instructions[0x8F]
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x8F] = func() { // ADC A,A
+		z._instructions.Addc_r(&z._r.A)
+	}
 
 	// 0x90
 	z._instructions[0x90]
@@ -1490,6 +1512,24 @@ func (ins *Instructions) Addr_r(src *byte) {
 
 	z80._r.M = 1
 	z80._r.T = 4
+}
+
+// ADDc
+func (ins *Instructions) Addc_r(src *byte) {
+	sum := Address(z80._r.A) + Address(*src)
+	if (z80._r.F & 0x10) != 0 {
+		sum += 1
+	}
+
+	z80._r.A = byte(sum)
+	ins.ZeroF(z80._r.A, 0)
+
+	if sum > 0xF {
+		z80._r.F |= 0x10
+	}
+
+	z._r.M = 1
+	z._r.T = 4
 }
 
 // Unimplemented instruction error!
