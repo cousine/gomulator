@@ -51,6 +51,11 @@ func (z *Z80) Reset() {
 }
 
 func (z *Z80) Dispatch() {
+	z.InitInstructions()
+	go z.Execute()
+}
+
+func (z *Z80) Execute() {
 	for {
 		op, err := mmu.ReadByte(z._r.PC) // Fetch the instruction
 		z._r.PC++                        // Increment the PC
