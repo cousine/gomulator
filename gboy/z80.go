@@ -24,8 +24,9 @@ type Clock struct {
 // Registers
 type Registers struct {
 	A, B, C, D, E, H, L, F byte
-	PC, SP                 Address
+	PC, SP, HL             Address
 	M, T                   int
+	IME                    bool
 }
 
 // Reset the CPU by clearing the registers and reseting the PC and SP

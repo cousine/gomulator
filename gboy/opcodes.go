@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-type Instructions [0xFF]func()
+type Instructions [0x100]func()
 
 /* Loads up the instructions map for the GameBoys's Z80
 / Yup all 256 of them were typed T_T
@@ -665,7 +665,7 @@ func (z *Z80) InitInstructions() {
 
 	z._instructions[0x34] = func() { // INC (HL)
 		addr := CombineToAddress(z._r.H, z._r.L)
-		i, err = mmu.ReadByte(addr + 1)
+		i, err := mmu.ReadByte(addr + 1)
 
 		err2 := mmu.WriteByte(addr, i)
 
@@ -679,7 +679,7 @@ func (z *Z80) InitInstructions() {
 
 	z._instructions[0x35] = func() { // DEC (HL)
 		addr := CombineToAddress(z._r.H, z._r.L)
-		i, err = mmu.ReadByte(addr - 1)
+		i, err := mmu.ReadByte(addr - 1)
 
 		err2 := mmu.WriteByte(addr, i)
 
@@ -1232,7 +1232,7 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0x8E] = func() { // ADC A,(HL)
-		hl, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		hl, err := mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
 		z._instructions.Addc_r(&hl)
 
 		z._r.M = 2
@@ -1425,7 +1425,7 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0xB6] = func() { // OR (HL)
-		hl, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+		hl, err := mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
 		z._instructions.Orr_r(&hl)
 
 		z._r.M = 2
@@ -1495,7 +1495,7 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0xC1] = func() { // POP BC
-		z._instructions.Popr_r(z._r.B, z._r.C)
+		z._instructions.Popr_r(&z._r.B, &z._r.C)
 	}
 
 	z._instructions[0xC2] = func() { // JP NZ,nn
@@ -1548,7 +1548,7 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0xC5] = func() { // PUSH BC
-		z._instructions.Pushr_r(z._r.B, z._r.C)
+		z._instructions.Pushr_r(&z._r.B, &z._r.C)
 	}
 
 	z._instructions[0xC6] = func() { // ADD A,n
@@ -1665,103 +1665,390 @@ func (z *Z80) InitInstructions() {
 	}
 
 	// 0xD0
-	z._instructions[0xD0]
+	z._instructions[0xD0] = func() { // RET NC
+		var err error
 
-	z._instructions[0xD1]
+		z._r.M = 1
+		z._r.T = 4
 
-	z._instructions[0xD2]
+		if (z._r.F & 0x10) == 0 {
+			z._r.PC, err = mmu.ReadWord(z._r.SP)
+			z._r.SP += 2
 
-	z._instructions[0xD3]
+			z._r.M += 2
+			z._r.T += 8
+		}
 
-	z._instructions[0xD4]
+		LogErrors(err)
+	}
 
-	z._instructions[0xD5]
+	z._instructions[0xD1] = func() { // POP DE
+		z._instructions.Popr_r(&z._r.D, &z._r.E)
+	}
 
-	z._instructions[0xD6]
+	z._instructions[0xD2] = func() { // JP NC,nn
+		var err error
 
-	z._instructions[0xD7]
+		z._r.M = 3
+		z._r.T = 12
 
-	z._instructions[0xD8]
+		if (z._r.F & 0x10) == 0 {
+			z._r.PC, err = mmu.ReadWord(z._r.PC)
 
-	z._instructions[0xD9]
+			z._r.M++
+			z._r.T += 4
+		} else {
+			z._r.PC += 2
+		}
 
-	z._instructions[0xDA]
+		LogErrors(err)
+	}
 
-	z._instructions[0xDB]
+	z._instructions[0xD3] = XX
 
-	z._instructions[0xDC]
+	z._instructions[0xD4] = func() { // CALL NC,nn
+		var err, err2 error
 
-	z._instructions[0xDD]
+		z._r.M = 3
+		z._r.T = 12
 
-	z._instructions[0xDE]
+		if (z._r.F & 0x10) == 0 {
+			z._r.SP -= 2
+			err = mmu.WriteWord(z._r.SP, z._r.PC+2)
+			z._r.PC, err2 = mmu.ReadWord(z._r.PC)
 
-	z._instructions[0xDF]
+			z._r.M += 2
+			z._r.T += 8
+		} else {
+			z._r.PC += 2
+		}
+
+		LogErrors(err, err2)
+	}
+
+	z._instructions[0xD5] = func() { // PUSH DE
+		z._instructions.Pushr_r(&z._r.D, &z._r.E)
+	}
+
+	z._instructions[0xD6] = func() { // SUB A,n
+		pc, err := mmu.ReadByte(z._r.PC)
+		z._instructions.Subr_r(&pc)
+		z._r.PC++
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xD7] = func() { // RST 10
+		z._instructions.Rst_r(0x10)
+	}
+
+	z._instructions[0xD8] = func() { // Ret C
+		var err error
+
+		z._r.M = 1
+		z._r.T = 4
+
+		if (z._r.F & 0x10) == 0x10 {
+			z._r.PC, err = mmu.ReadWord(z._r.SP)
+			z._r.SP += 2
+
+			z._r.M += 2
+			z._r.T += 8
+		}
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xD9] = func() { // RETI
+		var err error
+		z._r.IME = true
+		z._r.PC, err = mmu.ReadWord(z._r.SP)
+		z._r.SP += 2
+
+		z._r.M = 3
+		z._r.T = 12
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xDA] = func() { // JP C,nn
+		var err error
+
+		z._r.M = 3
+		z._r.T = 12
+
+		if (z._r.F & 0x10) == 0x10 {
+			z._r.PC, err = mmu.ReadWord(z._r.PC)
+
+			z._r.M++
+			z._r.T += 4
+		} else {
+			z._r.PC += 2
+		}
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xDB] = XX
+
+	z._instructions[0xDC] = func() { // CALL C, nn
+		var err, err2 error
+
+		z._r.M = 3
+		z._r.T = 12
+
+		if (z._r.F & 0x10) == 0x10 {
+			z._r.SP -= 2
+			err = mmu.WriteWord(z._r.SP, z._r.PC+2)
+			z._r.PC, err2 = mmu.ReadWord(z._r.PC)
+
+			z._r.M += 2
+			z._r.T += 8
+		} else {
+			z._r.PC += 2
+		}
+
+		LogErrors(err, err2)
+	}
+
+	z._instructions[0xDD] = XX
+
+	z._instructions[0xDE] = func() { // SBC A,n
+		pc, err := mmu.ReadByte(z._r.PC)
+		z._instructions.Subc_r(&pc)
+		z._r.PC++
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xDF] = func() { // RST 18
+		z._instructions.Rst_r(0x18)
+	}
 
 	// 0xE0
-	z._instructions[0xE0]
+	z._instructions[0xE0] = func() { // LDH (n),A
+		pc, err := mmu.ReadByte(z._r.PC)
+		var err2 error
+		err2 = mmu.WriteByte(Address(0xFF00+uint16(pc)), z._r.A)
+		z._r.PC++
 
-	z._instructions[0xE1]
+		z._r.M = 3
+		z._r.T = 12
 
-	z._instructions[0xE2]
+		LogErrors(err, err2)
+	}
 
-	z._instructions[0xE3]
+	z._instructions[0xE1] = func() { // POP HL
+		z._instructions.Popr_r(&z._r.H, &z._r.L)
+	}
 
-	z._instructions[0xE4]
+	z._instructions[0xE2] = func() { // LDH (C),A
+		err := mmu.WriteByte(Address(0xFF00+uint16(z._r.C)), z._r.A)
 
-	z._instructions[0xE5]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0xE6]
+		LogErrors(err)
+	}
 
-	z._instructions[0xE7]
+	z._instructions[0xE3] = XX
 
-	z._instructions[0xE8]
+	z._instructions[0xE4] = XX
 
-	z._instructions[0xE9]
+	z._instructions[0xE5] = func() { // PUSH HL
+		z._instructions.Pushr_r(&z._r.H, &z._r.L)
+	}
 
-	z._instructions[0xEA]
+	z._instructions[0xE6] = func() { // AND n
+		pc, err := mmu.ReadByte(z._r.PC)
+		z._instructions.Andr_r(&pc)
+		z._r.PC++
 
-	z._instructions[0xEB]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0xEC]
+		LogErrors(err)
+	}
 
-	z._instructions[0xED]
+	z._instructions[0xE7] = func() { // RST 20
+		z._instructions.Rst_r(0x20)
+	}
 
-	z._instructions[0xEE]
+	z._instructions[0xE8] = func() { // ADD SP, d
+		i, err := mmu.ReadByte(z._r.PC)
+		decrSP := false
 
-	z._instructions[0xEF]
+		if i > 0x7F {
+			i = ^i + 1
+			decrSP = true
+		}
+
+		z._r.PC++
+		if decrSP {
+			z._r.SP -= Address(i)
+		} else {
+			z._r.SP += Address(i)
+		}
+
+		z._r.M = 4
+		z._r.T = 16
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xE9] = func() { // JP (HL)
+		z._r.PC = z._r.HL
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0xEA] = func() { // LD (nn), A
+		pc, err := mmu.ReadWord(z._r.PC)
+		err2 := mmu.WriteByte(pc, z._r.A)
+		z._r.PC += 2
+
+		z._r.M = 4
+		z._r.T = 16
+
+		LogErrors(err, err2)
+	}
+
+	z._instructions[0xEB] = XX
+
+	z._instructions[0xEC] = XX
+
+	z._instructions[0xED] = XX
+
+	z._instructions[0xEE] = func() { // XOR n
+		pc, err := mmu.ReadByte(z._r.PC)
+		z._instructions.Xorr_r(&pc)
+		z._r.PC++
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xEF] = func() { // RST 28
+		z._instructions.Rst_r(0x28)
+	}
 
 	// 0xF0
-	z._instructions[0xF0]
+	z._instructions[0xF0] = func() { // LDH A,(n)
+		pc, err := mmu.ReadByte(z._r.PC)
 
-	z._instructions[0xF1]
+		var err2 error
+		z._r.A, err2 = mmu.ReadByte(Address(0xFF00 + uint16(pc)))
+		z._r.PC++
 
-	z._instructions[0xF2]
+		z._r.M = 3
+		z._r.T = 12
 
-	z._instructions[0xF3]
+		LogErrors(err, err2)
+	}
 
-	z._instructions[0xF4]
+	z._instructions[0xF1] = func() { // POP AF
+		z._instructions.Popr_r(&z._r.A, &z._r.F)
+	}
 
-	z._instructions[0xF5]
+	z._instructions[0xF2] = XX
 
-	z._instructions[0xF6]
+	z._instructions[0xF3] = func() { // DI
+		z._r.IME = false
 
-	z._instructions[0xF7]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0xF8]
+	z._instructions[0xF4] = XX
 
-	z._instructions[0xF9]
+	z._instructions[0xF5] = func() { // PUSH AF
+		z._instructions.Pushr_r(&z._r.A, &z._r.F)
+	}
 
-	z._instructions[0xFA]
+	z._instructions[0xF6] = func() { // OR n
+		pc, err := mmu.ReadByte(z._r.PC)
+		z._instructions.Orr_r(&pc)
+		z._r.PC++
 
-	z._instructions[0xFB]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0xFC]
+		LogErrors(err)
+	}
 
-	z._instructions[0xFD]
+	z._instructions[0xF7] = func() { // RST 30
+		z._instructions.Rst_r(0x30)
+	}
 
-	z._instructions[0xFE]
+	z._instructions[0xF8] = func() { // LDHL SP,d
+		i, err := mmu.ReadByte(z._r.PC)
+		j := int16(i)
 
-	z._instructions[0xFF]
+		if j > 0x7F {
+			j = -(^j + 1)
+		}
+		z._r.PC++
+
+		j += int16(z._r.SP)
+
+		z._r.H = byte(j >> 8)
+		z._r.L = byte(j)
+
+		z._r.M = 3
+		z._r.T = 12
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xF9] = XX
+
+	z._instructions[0xFA] = func() { // LD A,(nn)
+		pc, err := mmu.ReadWord(z._r.PC)
+		var err2 error
+		z._r.A, err2 = mmu.ReadByte(pc)
+
+		z._r.PC += 2
+
+		z._r.M = 4
+		z._r.T = 16
+
+		LogErrors(err, err2)
+	}
+
+	z._instructions[0xFB] = func() { // EI
+		z._r.IME = true
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0xFC] = XX
+
+	z._instructions[0xFD] = XX
+
+	z._instructions[0xFE] = func() { // CP n
+		pc, err := mmu.ReadByte(z._r.PC)
+		z._instructions.Cpr_r(&pc)
+		z._r.PC++
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xFF] = func() { // RST 38
+		z._instructions.Rst_r(0x38)
+	}
 }
 
 // Helper methods
@@ -1828,8 +2115,8 @@ func (ins *Instructions) Addc_r(src *byte) {
 		z80._r.F |= 0x10
 	}
 
-	z._r.M = 1
-	z._r.T = 4
+	z80._r.M = 1
+	z80._r.T = 4
 }
 
 // Subtracts register at src from register A
@@ -1876,7 +2163,7 @@ func (ins *Instructions) Andr_r(src *byte) {
 }
 
 // XOR
-func (inc *Instructions) Xorr_r(src *byte) {
+func (ins *Instructions) Xorr_r(src *byte) {
 	z80._r.A ^= *src
 	ins.ZeroF(z80._r.A, 0)
 
@@ -1885,7 +2172,7 @@ func (inc *Instructions) Xorr_r(src *byte) {
 }
 
 // OR
-func (inc *Instructions) Orr_r(src *byte) {
+func (ins *Instructions) Orr_r(src *byte) {
 	z80._r.A |= *src
 	ins.ZeroF(z80._r.A, 0)
 
@@ -1898,7 +2185,7 @@ func (ins *Instructions) Cpr_r(src *byte) {
 	i := int16(z80._r.A)
 	i -= int16(*src)
 
-	ins.ZeroF(i, 1)
+	ins.ZeroF(byte(i), 1)
 	if i < 0 {
 		z80._r.F |= 0x10
 	}
@@ -1924,7 +2211,7 @@ func (ins *Instructions) Popr_r(r1, r2 *byte) {
 
 // PUSH
 func (inst *Instructions) Pushr_r(r1, r2 *byte) {
-	var err, err2
+	var err, err2 error
 	z80._r.SP--
 	err = mmu.WriteByte(z80._r.SP, *r1)
 	z80._r.SP--
