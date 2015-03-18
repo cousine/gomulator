@@ -822,37 +822,119 @@ func (z *Z80) InitInstructions() {
 	}
 
 	// 0x40
-	z._instructions[0x40]
+	z._instructions[0x40] = func() { // LD B,B
+		z._r.B = z._r.B
 
-	z._instructions[0x41]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x42]
+	z._instructions[0x41] = func() { // LD B,C
+		z._r.B = z._r.C
 
-	z._instructions[0x43]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x44]
+	z._instructions[0x42] = func() { // LD B,D
+		z._r.B = z._r.D
 
-	z._instructions[0x45]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x46]
+	z._instructions[0x43] = func() { // LD B,E
+		z._r.B = z._r.E
 
-	z._instructions[0x47]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x48]
+	z._instructions[0x44] = func() { // LD B,H
+		z._r.B = z._r.H
 
-	z._instructions[0x49]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x4A]
+	z._instructions[0x45] = func() { // LD B,L
+		z._r.B = z._r.L
 
-	z._instructions[0x4B]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x4C]
+	z._instructions[0x46] = func() { // LD B,(HL)
+		var err error
+		z._r.B, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
 
-	z._instructions[0x4D]
+		z._r.M = 2
+		z._r.T = 8
+	}
 
-	z._instructions[0x4E]
+	z._instructions[0x47] = func() { // LD B, A
+		z._r.B = z._r.A
 
-	z._instructions[0x4F]
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x48] = func() { // LD C,B
+		z._r.C = z._r.B
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x49] = func() { // LD C,C
+		z._r.C = z._r.C
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x4A] = func() { // LD C,D
+		z._r.C = z._r.D
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x4B] = func() { // LD C,E
+		z._r.C = z._r.E
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x4C] = func() { // LD C,H
+		z._r.C = z._r.H
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x4D] = func() { // LD C,L
+		z._r.C = z._r.L
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x4E] = func() { // LD C,(HL)
+		var err error
+		z._r.C, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+
+		z._r.M = 2
+		z._r.T = 8
+	}
+
+	z._instructions[0x4F] = func() { // LD C,A
+		z._r.C = z._r.A
+
+		z._r.M = 1
+		z._r.T = 4
+	}
 
 	// 0x50
 	z._instructions[0x50]
