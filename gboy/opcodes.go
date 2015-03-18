@@ -1477,37 +1477,192 @@ func (z *Z80) InitInstructions() {
 	}
 
 	// 0xC0
-	z._instructions[0xC0]
+	z._instructions[0xC0] = func() { // RET NZ
+		var err error
 
-	z._instructions[0xC1]
+		z._r.M = 1
+		z._r.T = 4
 
-	z._instructions[0xC2]
+		if (z._r.F & 0x80) == 0 {
+			z._r.PC, err = mmu.ReadWord(z._r.SP)
+			z._r.SP += 2
 
-	z._instructions[0xC3]
+			z._r.M += 2
+			z._r.T += 8
+		}
 
-	z._instructions[0xC4]
+		LogErrors(err)
+	}
 
-	z._instructions[0xC5]
+	z._instructions[0xC1] = func() { // POP BC
+		z._instructions.Popr_r(z._r.B, z._r.C)
+	}
 
-	z._instructions[0xC6]
+	z._instructions[0xC2] = func() { // JP NZ,nn
+		var err error
 
-	z._instructions[0xC7]
+		z._r.M = 3
+		z._r.T = 12
 
-	z._instructions[0xC8]
+		if (z._r.F & 0x80) == 0 {
+			z._r.PC, err = mmu.ReadWord(z._r.PC)
 
-	z._instructions[0xC9]
+			z._r.M++
+			z._r.T += 4
+		} else {
+			z._r.PC += 2
+		}
 
-	z._instructions[0xCA]
+		LogErrors(err)
+	}
 
-	z._instructions[0xCB]
+	z._instructions[0xC3] = func() { // JP nn
+		var err error
+		z._r.PC, err = mmu.ReadWord(z._r.PC)
 
-	z._instructions[0xCC]
+		z._r.M = 3
+		z._r.T = 12
 
-	z._instructions[0xCD]
+		LogErrors(err)
+	}
 
-	z._instructions[0xCE]
+	z._instructions[0xC4] = func() { // CALL NZ,nn
+		var err, err2 error
 
-	z._instructions[0xCF]
+		z._r.M = 3
+		z._r.T = 12
+
+		if (z._r.F & 0x80) == 0 {
+			z._r.SP -= 2
+
+			err = mmu.WriteWord(z._r.SP, z._r.PC+2)
+			z._r.PC, err2 = mmu.ReadWord(z._r.PC)
+
+			z._r.M += 2
+			z._r.T += 8
+		} else {
+			z._r.PC += 2
+		}
+
+		LogErrors(err, err2)
+	}
+
+	z._instructions[0xC5] = func() { // PUSH BC
+		z._instructions.Pushr_r(z._r.B, z._r.C)
+	}
+
+	z._instructions[0xC6] = func() { // ADD A,n
+		pc, err := mmu.ReadByte(z._r.PC)
+		z._instructions.Addr_r(&pc)
+		z._r.PC++
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xC7] = func() { // RST 0
+		z._instructions.Rst_r(0x00)
+	}
+
+	z._instructions[0xC8] = func() { // RET Z
+		var err error
+
+		z._r.M = 1
+		z._r.T = 4
+
+		if (z._r.F & 0x80) == 0x80 {
+			z._r.PC, err = mmu.ReadWord(z._r.SP)
+			z._r.SP += 2
+
+			z._r.M += 2
+			z._r.T += 8
+		}
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xC9] = func() { // RET
+		var err error
+		z._r.PC, err = mmu.ReadWord(z._r.SP)
+		z._r.SP += 2
+
+		z._r.M = 3
+		z._r.T = 12
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xCA] = func() { // JP Z,nn
+		var err error
+
+		z._r.M = 3
+		z._r.T = 12
+
+		if (z._r.F & 0x80) == 0x80 {
+			z._r.PC, err = mmu.ReadWord(z._r.PC)
+
+			z._r.M++
+			z._r.T += 4
+		} else {
+			z._r.PC += 2
+		}
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xCB] = func() { // Ext ops (CBMap)
+	}
+
+	z._instructions[0xCC] = func() { // CALL Z,nn
+		var err, err2 error
+
+		z._r.M = 3
+		z._r.T = 12
+
+		if (z._r.F & 0x80) == 0x80 {
+			z._r.SP -= 2
+			err = mmu.WriteWord(z._r.SP, z._r.PC+2)
+			z._r.PC, err2 = mmu.ReadWord(z._r.PC)
+
+			z._r.M += 2
+			z._r.T += 8
+		} else {
+			z._r.PC += 2
+		}
+
+		LogErrors(err, err2)
+	}
+
+	z._instructions[0xCD] = func() { // CALL nn
+		var err, err2 error
+
+		z._r.SP -= 2
+
+		err = mmu.WriteWord(z._r.SP, z._r.PC+2)
+		z._r.PC, err2 = mmu.ReadWord(z._r.PC)
+
+		z._r.M = 5
+		z._r.T = 20
+
+		LogErrors(err, err2)
+	}
+
+	z._instructions[0xCE] = func() { // ADC A,n
+		pc, err := mmu.ReadByte(z._r.PC)
+		z._instructions.Addc_r(&pc)
+		z._r.PC++
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0xCF] = func() { // RST 8
+		z._instructions.Rst_r(0x08)
+	}
 
 	// 0xD0
 	z._instructions[0xD0]
@@ -1624,6 +1779,18 @@ func (ins *Instructions) ZeroF(i, as byte) {
 	}
 }
 
+// Resets the Program Counter to location
+func (ins *Instructions) Rst_r(addr Address) {
+	z80._r.SP -= 2
+	err := mmu.WriteWord(z80._r.SP, z80._r.PC)
+	z80._r.PC = addr
+
+	z80._r.M = 3
+	z80._r.T = 12
+
+	LogErrors(err)
+}
+
 // Loads a register at src in register at dst
 func (ins *Instructions) LoadRnR(dst, src *byte) {
 	*dst = *src
@@ -1738,6 +1905,35 @@ func (ins *Instructions) Cpr_r(src *byte) {
 
 	z80._r.M = 1
 	z80._r.T = 4
+}
+
+// Stack Operations
+// POP
+func (ins *Instructions) Popr_r(r1, r2 *byte) {
+	var err, err2 error
+	*r2, err = mmu.ReadByte(z80._r.SP)
+	z80._r.SP++
+	*r1, err2 = mmu.ReadByte(z80._r.SP)
+	z80._r.SP++
+
+	z80._r.M = 3
+	z80._r.T = 12
+
+	LogErrors(err, err2)
+}
+
+// PUSH
+func (inst *Instructions) Pushr_r(r1, r2 *byte) {
+	var err, err2
+	z80._r.SP--
+	err = mmu.WriteByte(z80._r.SP, *r1)
+	z80._r.SP--
+	err2 = mmu.WriteByte(z80._r.SP, *r2)
+
+	z80._r.M = 3
+	z80._r.T = 12
+
+	LogErrors(err, err2)
 }
 
 // Unimplemented instruction error!
