@@ -870,6 +870,8 @@ func (z *Z80) InitInstructions() {
 
 		z._r.M = 2
 		z._r.T = 8
+
+		LogErrors(err)
 	}
 
 	z._instructions[0x47] = func() { // LD B, A
@@ -927,6 +929,8 @@ func (z *Z80) InitInstructions() {
 
 		z._r.M = 2
 		z._r.T = 8
+
+		LogErrors(err)
 	}
 
 	z._instructions[0x4F] = func() { // LD C,A
@@ -937,37 +941,123 @@ func (z *Z80) InitInstructions() {
 	}
 
 	// 0x50
-	z._instructions[0x50]
+	z._instructions[0x50] = func() { // LD D,B
+		z._r.D = z._r.B
 
-	z._instructions[0x51]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x52]
+	z._instructions[0x51] = func() { // LD D,C
+		z._r.D = z._r.C
 
-	z._instructions[0x53]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x54]
+	z._instructions[0x52] = func() { // LD D,D
+		z._r.D = z._r.D
 
-	z._instructions[0x55]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x56]
+	z._instructions[0x53] = func() { // LD D,E
+		z._r.D = z._r.E
 
-	z._instructions[0x57]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x58]
+	z._instructions[0x54] = func() { // LD D,H
+		z._r.D = z._r.H
 
-	z._instructions[0x59]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x5A]
+	z._instructions[0x55] = func() { // LD D,L
+		z._r.D = z._r.L
 
-	z._instructions[0x5B]
+		z._r.M = 1
+		z._r.T = 4
+	}
 
-	z._instructions[0x5C]
+	z._instructions[0x56] = func() { // LD D,(HL)
+		var err error
+		z._r.D, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
 
-	z._instructions[0x5D]
+		z._r.M = 2
+		z._r.T = 8
 
-	z._instructions[0x5E]
+		LogErrors(err)
+	}
 
-	z._instructions[0x5F]
+	z._instructions[0x57] = func() { // LD D,A
+		z._r.D = z._r.A
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x58] = func() { // LD E,B
+		z._r.E = z._r.B
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x59] = func() { // LD E,C
+		z._r.E = z._r.C
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x5A] = func() { // LD E,D
+		z._r.E = z._r.D
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x5B] = func() { // LD E,E
+		z._r.E = z._r.E
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x5C] = func() { // LD E,H
+		z._r.E = z._r.H
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x5D] = func() { // LD E,L
+		z._r.E = z._r.L
+
+		z._r.M = 1
+		z._r.T = 4
+	}
+
+	z._instructions[0x5E] = func() { // LD E,(HL)
+		var err error
+		z._r.E, err = mmu.ReadByte(CombineToAddress(z._r.H, z._r.L))
+
+		z._r.M = 2
+		z._r.T = 8
+
+		LogErrors(err)
+	}
+
+	z._instructions[0x5F] = func() { // LD E,A
+		z._r.E = z._r.A
+
+		z._r.M = 1
+		z._r.T = 4
+	}
 
 	// 0x60
 	z._instructions[0x60]
