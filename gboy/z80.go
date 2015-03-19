@@ -10,10 +10,10 @@ const FHCarry = 0x20 // Half-Carry
 const FCarry = 0x10  // Carry
 
 type Z80 struct {
-	_clock        Clock
-	_r            Registers
-	_instructions Instructions
-	_halt         bool
+	_clock                   Clock
+	_r                       Registers
+	_instructions, _cbprefix Instructions
+	_halt                    bool
 }
 
 // Clock
@@ -24,7 +24,7 @@ type Clock struct {
 // Registers
 type Registers struct {
 	A, B, C, D, E, H, L, F byte
-	PC, SP, HL             Address
+	PC, SP                 Address
 	M, T                   int
 	IME                    bool
 }

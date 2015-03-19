@@ -9,7 +9,7 @@ type Instructions [0x100]func()
 /* Loads up the instructions map for the GameBoys's Z80
 / Yup all 256 of them were typed T_T
 /
-/ Probably this can be cleaned up and abstracted more since
+/ Probably this can be cleaned up and dried up since
 / alot of the functionality is shared between instructions. */
 func (z *Z80) InitInstructions() {
 	// 0x00
@@ -1613,6 +1613,12 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0xCB] = func() { // Ext ops (CBMap)
+		pc, err := mmu.ReadByte(z._r.PC)
+		z._r.PC++
+
+		z._cbprefix[pc]()
+
+		LogErrors(err)
 	}
 
 	z._instructions[0xCC] = func() { // CALL Z,nn
@@ -1903,10 +1909,13 @@ func (z *Z80) InitInstructions() {
 	}
 
 	z._instructions[0xE9] = func() { // JP (HL)
-		z._r.PC = z._r.HL
+		var err error
+		z._r.PC, err = mmu.ReadWord(CombineToAddress(z._r.H, z._r.L))
 
 		z._r.M = 1
 		z._r.T = 4
+
+		LogErrors(err)
 	}
 
 	z._instructions[0xEA] = func() { // LD (nn), A
@@ -2049,6 +2058,8 @@ func (z *Z80) InitInstructions() {
 	z._instructions[0xFF] = func() { // RST 38
 		z._instructions.Rst_r(0x38)
 	}
+
+	z.InitCBMap()
 }
 
 // Helper methods
